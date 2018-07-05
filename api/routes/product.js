@@ -9,8 +9,14 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
+    const product = {
+        productName : req.body.name,
+        productId : req.body.productID,
+        price : req.body.price
+    }
     res.status(200).json({
-        message : 'Product routing POST Request.'
+        message : 'Product routing POST Request.',
+        productDetails : product
     })
 })
 

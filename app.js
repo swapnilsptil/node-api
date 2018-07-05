@@ -2,9 +2,12 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const CORPOptions = require('./constants/CorpConstant');
 
+// Middleware Functions for NODE file.
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(CORPOptions);
 
 const productRouter = require('./api/routes/product');
 const orderRouter = require('./api/routes/orders')
