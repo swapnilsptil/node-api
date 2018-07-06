@@ -1,6 +1,8 @@
 const express = require('express');
-
 const router = express.Router();
+
+const mongoose = require('mongoose');
+const orderSchema = require('../models/order');
 
 router.get('/', (req, res, next) => {
     res.status(200).json({
@@ -9,14 +11,22 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
-    const order  = {
-        orderID : req.body.orderId,
-        quantity : req.body.quantity
-    }
-    res.status(200).json({
-        message : 'Order Created',
-        order : order
+    const order = new orderSchema({
+        _id : mongoose.Types.ObjectId(),
+        quantity : req.body.quantity,
+        orderId : req.body.orderId
     })
+    console.log('order received at server end', order);
+    order.save().then(result => {    
+        console.log('Order Placed..', result)
+    }).catch(err => {
+        console.log('Order not placed , ', err)
+    })
+    res.status(200).json({
+        message: 'order placed',
+        orderDetails : order
+    })
+
 })
 
 router.get('/:orderID', (req, res, next) => {

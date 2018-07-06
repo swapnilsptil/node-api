@@ -12,12 +12,6 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
-    // const product = {
-    //     productName : req.body.name,
-    //     productId : req.body.productID,
-    //     price : req.body.price
-    // }
-
     const productS = new productSchema({
         _id : mongoose.Types.ObjectId(),
         name : req.body.name,
@@ -36,7 +30,7 @@ router.post('/', (req, res, next) => {
 
 router.get('/:productID', (req, res, next) => {
     const productID = req.params.productID;
-    console.log('productID', productID)
+
     productSchema.findById(productID)
     .exec()
     .then( result => {
