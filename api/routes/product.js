@@ -6,8 +6,32 @@ const mongoose = require('mongoose');
 const productSchema = require('../models/product')
 
 router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message : 'Product routing GET Request.'
+    productSchema.find()
+    .select('name price _id')
+    .exec()
+    .then(result => {
+        const doc = {
+            count : result.length,
+            product : result.map(p => {
+                return {
+                    name : p.name,
+                    price : p.price,
+                    _id : p._id,
+                    request : {
+                        type : 'GET',
+                        url : 'http://localhost:3000/product/' + p._id 
+                    }
+                }
+            })
+        }
+        res.status(200).json({
+            message : "All product list",
+            productList : doc
+        })
+    }).catch(err => {
+        res.status(500).json({
+            message : err
+        })
     })
 })
 
@@ -18,14 +42,19 @@ router.post('/', (req, res, next) => {
         price : req.body.price
     })
 
-    productS.save().then( result=> {
-        console.log('save result ',result)
-    }).catch(err => console.log('save error', err))
-
-    res.status(200).json({
-        message : 'Product routing POST Request.',
-        productDetails : productS
+    productS.save()
+    .then( result => {
+        res.status(200).json({
+            message : 'product added',
+            productDetails : result
+        })
     })
+    .catch(err => {
+        res.status(500).json({
+            message : err
+        })
+    })
+
 })
 
 router.get('/:productID', (req, res, next) => {
@@ -35,11 +64,19 @@ router.get('/:productID', (req, res, next) => {
     .exec()
     .then( result => {
         console.log('Find by product ID ', result);
-        res.status(200).json(result)
+        if(result){
+            res.status(200).json(result)
+        } else {
+            res.status(404).json({
+                message : `No Data found for ${productID}`
+            })
+        }
     })
     .catch( err => {
         console.log('error to find product', err)
-        res.status(500)
+        res.status(500).json({
+            error: err
+        })
     })
 })
 

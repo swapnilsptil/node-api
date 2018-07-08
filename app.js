@@ -12,11 +12,13 @@ app.use(CORPOptions);
 mongoose.connect('mongodb://swapnil:swapnil@node-api-practice-shard-00-00-wxin1.mongodb.net:27017,node-api-practice-shard-00-01-wxin1.mongodb.net:27017,node-api-practice-shard-00-02-wxin1.mongodb.net:27017/test?ssl=true&replicaSet=node-api-practice-shard-0&authSource=admin&retryWrites=true')
 
 const productRouter = require('./api/routes/product');
-const orderRouter = require('./api/routes/orders')
+const orderRouter = require('./api/routes/orders');
+const userRouter = require('./api/routes/user');
 
 //routes to handle requests
 app.use('/product', productRouter);
 app.use('/orders', orderRouter);
+app.use('/user', userRouter);
 
 app.use(morgan('dev'));
 

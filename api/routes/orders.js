@@ -5,8 +5,17 @@ const mongoose = require('mongoose');
 const orderSchema = require('../models/order');
 
 router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message : 'Order get api'
+    orderSchema.find().exec()
+    .then(result => {
+        res.status(200).json({
+            message : 'Retrived all data',
+            orderList : result
+        })
+    })
+    .catch( err => {
+        res.status(202).json({
+            message : err
+        })
     })
 })
 
@@ -31,26 +40,43 @@ router.post('/', (req, res, next) => {
 
 router.get('/:orderID', (req, res, next) => {
     const orderID = req.params.orderID;
-    res.status(200).json({
-        message : `Order get api ${orderID}`,
-        orderID : orderID
-    })
-})
 
-router.post('/:orderID', (req, res, next) => {
-    const orderID = req.params.orderID;
-    res.status(200).json({
-        message : `Order POST api ${orderID}`,
-        orderID : orderID
+    orderSchema.findById(orderID).exec()
+    .then(result => {
+        console.log('Order search by ID : ', result)
+        if(result){
+            res.status(200).json({
+                message : 'Order search Done',
+                orderDetails : result
+            })
+        } else {
+            res.status(404).json({
+                message : `No data found for ${orderID}`
+            })
+        }
+        
+    }).catch(err => {
+        res.status(500).json({
+            message : err
+        })
     })
 })
 
 router.delete('/:orderID', (req, res, next) => {
     const orderID = req.params.orderID;
-    res.status(200).json({
-        message : `Order DELETE api ${orderID}`,
-        orderID : orderID
+    
+    orderSchema.remove({_id : orderID}).exec()
+    .then(result => {
+        res.status(200).json({
+            message : `Removed ${orderID} from database`
+        })
     })
+    .catch(err => {
+        res.status(404).json({
+            message : err
+        })
+    })
+
 })
 
 module.exports = router;
