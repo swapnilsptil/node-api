@@ -17,6 +17,7 @@ Router.post('/signup', (req, res, next) => {
                 })
             } else {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
+                debugger;
                 if(err) {
                     return res.status(500).json({
                         message : err
@@ -25,7 +26,12 @@ Router.post('/signup', (req, res, next) => {
                     const userData = new user({
                         _id : mongoose.Types.ObjectId(),
                         email: req.body.email,
-                        password : hash
+                        password : hash,
+                        name : req.body.name,
+                        flat : req.body.flat,
+                        pincode : req.body.pincode,
+                        building : req.body.building,
+                        phonenumber : req.body.phonenumber
                     })
                     userData.save().then( result => {
                         res.status(200).json({
@@ -66,7 +72,7 @@ Router.post('/login', (req, res, next) => {
                 if(result) {
                     const token = jwt.sign({
                         email : users[0].email,
-                        password : users[0].password
+                        password : users[0].password,
                     }, 'SWAPNIL', 
                     {
                         expiresIn : '1h'
@@ -74,6 +80,7 @@ Router.post('/login', (req, res, next) => {
 
                     return res.status(200).json({
                         message : 'Login Successfule',
+                        userDetails : users[0],
                         token : token,
                         isLoggedIn: true
                     })
@@ -91,17 +98,32 @@ Router.post('/login', (req, res, next) => {
     })
 })
 
-Router.post('/:userId', (req, res, next) => {
+Router.delete('/:userId', (req, res, next) => {
     const id = req.params.userId;
     user.remove({_id : id})
     .exec()
     .then(result => {
-        rest.status(200).json({
+        res.status(200).json({
             message : `User deleted`
         })
     })
     .catch(err => {
-        rest.status(500).json({
+        res.status(500).json({
+            message : err
+        })
+    })
+})
+
+Router.get('/', (req, res, next) => {
+    user.find()
+    .exec()
+    .then(result => {
+        res.status(200).json({
+            message : result
+        })
+    })
+    .catch(err => {
+        res.status(500).json({
             message : err
         })
     })
